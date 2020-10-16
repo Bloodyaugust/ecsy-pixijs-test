@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 /*
  * SplitChunksPlugin is enabled by default and replaced
@@ -35,8 +36,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const TerserPlugin = require('terser-webpack-plugin')
 
-module.exports = {
+module.exports = [{
   mode: 'development',
+  entry: './src/index.js',
+  name: 'web',
   devServer: {
     contentBase: [path.join(__dirname, 'src'), path.join(__dirname, 'assets')],
     compress: true,
@@ -99,4 +102,84 @@ module.exports = {
       name: false
     }
   }
-}
+}, {
+  mode: 'development',
+  entry: './electron/index.js',
+  name: 'electron',
+  target: 'electron-main',
+  output: {
+    path: path.join(__dirname, '/dist-electron'),
+    filename: 'main.js'
+  },
+  resolve: {
+    fallback: {
+      path: require.resolve('path-browserify')
+    }
+  },
+  plugins: [
+    new webpack.ProgressPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.join(__dirname, 'assets') },
+        { from: path.join(__dirname, 'electron/index.html') }
+      ]
+    })
+  ],
+  devServer: {
+    contentBase: [path.join(__dirname, 'electron'), path.join(__dirname, 'assets')],
+    compress: true,
+    port: 8081
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        include: [path.resolve(__dirname, 'src')],
+        loader: 'babel-loader'
+      },
+      {
+        test: /\.css$/i,
+
+        use: [
+          {
+            loader: 'style-loader',
+            options: {
+              esModule: true,
+              modules: {
+                namedExport: true
+              }
+            }
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: true,
+              modules: {
+                namedExport: true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  optimization: {
+    minimizer: [new TerserPlugin()],
+
+    splitChunks: {
+      cacheGroups: {
+        vendors: {
+          priority: -10,
+          test: /[\\/]node_modules[\\/]/
+        }
+      },
+
+      chunks: 'async',
+      minChunks: 1,
+      minSize: 30000,
+      name: false
+    }
+  }
+}]
