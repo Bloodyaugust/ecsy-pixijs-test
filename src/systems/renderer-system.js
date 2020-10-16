@@ -1,32 +1,24 @@
-import * as PIXI from 'pixi.js';
-import { System } from 'ecsy';
-import { PixiInitializable } from '../components/tags.js';
+import { Not, System } from 'ecsy';
+import { PixiInitializable, Renderable } from '../components/tags.js';
 import Position from '../components/position.js';
 import Sprite from '../components/sprite.js';
 
-class PixiInitializationSystem extends System {
+class RendererSystem extends System {
   execute(delta, time) {
     this.queries.renderables.results.forEach(entity => {
-      const sprite = entity.getMutableComponent(Sprite)
       const position = entity.getComponent(Position)
-
-      sprite.sprite = new PIXI.Sprite(sprite.texture)
-
-      sprite.sprite.anchor.x = 0.5
-      sprite.sprite.anchor.y = 0.5
+      const sprite = entity.getComponent(Sprite)
 
       sprite.sprite.x = position.x
-      sprite.sprite.y = position.y
-
-      app.stage.addChild(sprite.sprite)
-
-      entity.removeComponent(PixiInitializable)
+      sprite.sprite.y = position.y + Math.sin((time + entity.id) / 100) * 20
     })
   }
 }
 
-PixiInitializationSystem.queries = {
-  renderables: { components: [PixiInitializable, Sprite] }
+RendererSystem.queries = {
+  renderables: {
+    components: [Renderable, Sprite, Position, Not(PixiInitializable)]
+  }
 }
 
-export default PixiInitializationSystem;
+export default RendererSystem;
