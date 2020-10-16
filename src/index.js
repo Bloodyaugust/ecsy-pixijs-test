@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import Stats from 'stats.js';
-import { World, System, Component, TagComponent, Types, Not } from 'ecsy';
+import { World } from 'ecsy';
 import { Renderable, PixiInitializable } from './components/tags.js';
 import Position from './components/position.js';
 import Sprite from './components/sprite.js';
