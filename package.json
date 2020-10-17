@@ -40,7 +40,8 @@
   "build": {
     "appId": "com.bloodyaugust.ecsy-pixijs-test",
     "productName": "ECSY PixiJS Test",
-    "files": ["package.json", {"from": "./dist-electron/", "to": "./"}, {"from": "./dist", "to": "../dist"}],
+    "files": ["package.json", {"from": "./dist-electron/", "to": "./"}],
+    "extraResources": ["./dist"],
     "win": {
       "target": "portable"
     },
@@ -49,7 +50,6 @@
     },
     "extraMetadata": {
       "main": "./main.js"
-    },
-    "asar": false
+    }
   }
 }
