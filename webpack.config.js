@@ -125,11 +125,6 @@ module.exports = [{
       ]
     })
   ],
-  devServer: {
-    contentBase: [path.join(__dirname, 'electron'), path.join(__dirname, 'assets')],
-    compress: true,
-    port: 8081
-  },
 
   module: {
     rules: [
